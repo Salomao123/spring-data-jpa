@@ -156,4 +156,18 @@ public class SimpleJpaRepositoryUnitTests {
 
 		verify(em).merge(attachedUser);
 	}
+
+	@Test // DATAJPA-1535
+	public void noMergeGetsCalledWhenNewInstanceGetsDeleted() {
+
+		User newUser = new User();
+
+		when(information.isNew(newUser)).thenReturn(true);
+		when(em.contains(newUser)).thenReturn(false);
+
+		repo.delete(newUser);
+
+		verify(em).remove(newUser);
+		verify(em, never()).merge(newUser);
+	}
 }
